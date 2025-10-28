@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: ticket-app-twig
+    runtime: php
+    runtimeVersion: 8.4.5
+    buildCommand: composer install --no-dev --optimize-autoloader
+    startCommand: vendor/bin/heroku-php-apache2 public/
+    envVars:
+      - key: PHP_VERSION
+        value: 8.4
+    routes:
+      - path: /
+        matchType: prefix

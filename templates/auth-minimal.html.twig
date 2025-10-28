@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TicketApp{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .animate-slide-in {
+            animation: slideIn 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <!-- Main Content -->
+        <main class="flex-1">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Toast Notifications -->
+        <div class="fixed top-4 right-4 z-[9999] space-y-2">
+            {% for toast in toasts %}
+                <div class="max-w-sm w-full min-w-[200px] bg-white shadow-lg rounded-lg ring-1 ring-gray-200 overflow-hidden animate-slide-in">
+                    <div class="p-4">
+                        <div class="flex items-start">
+                            <div class="shrink-0">
+                                {% if toast.type == 'success' %}
+                                    <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></path></svg>
+                                {% elseif toast.type == 'error' %}
+                                    <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/></path></svg>
+                                {% endif %}
+                            </div>
+                            <div class="ml-3 w-0 flex-1">
+                                <p class="text-sm font-medium text-gray-900">{{ toast.message }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="{% if toast.type == 'success' %}bg-green-500{% elseif toast.type == 'error' %}bg-red-500{% endif %} h-1"></div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

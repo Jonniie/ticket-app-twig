@@ -1,0 +1,248 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tickets - TicketApp{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-black mb-2">Tickets</h1>
+                <p class="text-gray-600">
+                    Manage and track all your tickets in one place.
+                </p>
+            </div>
+            <a href="/tickets/new" class="btn-primary inline-flex items-center mt-4 lg:mt-0">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                New Ticket
+            </a>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                <!-- Search -->
+                <div class="relative flex-1 max-w-md">
+                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search tickets..."
+                        class="input-field pl-10"
+                        onkeyup="filterTickets()"
+                    />
+                </div>
+
+                <!-- Status Filter -->
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                        </svg>
+                        <select
+                            id="statusFilter"
+                            class="input-field w-auto"
+                            onchange="filterTickets()"
+                        >
+                            <option value="all">All Status ({{ tickets|length }})</option>
+                            <option value="open">Open ({{ tickets|filter(t => t.status == 'open')|length }})</option>
+                            <option value="in_progress">In Progress ({{ tickets|filter(t => t.status == 'in_progress')|length }})</option>
+                            <option value="closed">Closed ({{ tickets|filter(t => t.status == 'closed')|length }})</option>
+                        </select>
+                    </div>
+
+                    <!-- View Mode Toggle -->
+                    <div class="flex items-center border border-gray-300 rounded-lg">
+                        <button
+                            onclick="setViewMode('grid')"
+                            id="gridViewBtn"
+                            class="p-2 rounded-l-lg transition-colors bg-black text-white"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path>
+                            </svg>
+                        </button>
+                        <button
+                            onclick="setViewMode('list')"
+                            id="listViewBtn"
+                            class="p-2 rounded-r-lg transition-colors text-gray-500 hover:bg-gray-100"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        {% if tickets|length == 0 %}
+            <div class="text-center py-12">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No tickets yet</h3>
+                <p class="text-gray-600 mb-6">Get started by creating your first ticket.</p>
+                <a href="/tickets/new" class="btn-primary">
+                    Create First Ticket
+                </a>
+            </div>
+        {% else %}
+            <div id="ticketsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for ticket in tickets %}
+                    <div class="ticketCard card hover:shadow-lg transition-shadow duration-300 relative" data-title="{{ ticket.title|lower }}" data-description="{{ (ticket.description|default(''))|lower }}" data-status="{{ ticket.status }}">
+                        <!-- Actions Menu -->
+                        <div class="absolute top-4 right-4">
+                            <button
+                                onclick="toggleActions(this)"
+                                class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                            >
+                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                </svg>
+                            </button>
+                            
+                            <div class="actionsMenu hidden absolute right-0 top-10 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[120px]">
+                                <a
+                                    href="/tickets/{{ ticket.id }}/edit"
+                                    class="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                    <span>Edit</span>
+                                </a>
+                                <button
+                                    onclick="deleteTicket({{ ticket.id }}, this)"
+                                    class="flex items-center space-x-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                    <span>Delete</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Ticket Content -->
+                        <div class="space-y-4">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <h3 class="font-semibold text-lg text-black mb-2 line-clamp-2">
+                                        {{ ticket.title }}
+                                    </h3>
+                                    <p class="text-gray-600 text-sm line-clamp-3">
+                                        {{ ticket.description|default('No description provided') }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <span class="{% if ticket.status == 'open' %}status-badge status-open{% elseif ticket.status == 'in_progress' %}status-badge status-in-progress{% else %}status-badge status-closed{% endif %}">
+                                        {{ ticket.status|upper|replace('_', ' ') }}
+                                    </span>
+                                    {% if ticket.priority %}
+                                        <span class="{% if ticket.priority == 'high' %}text-red-600{% elseif ticket.priority == 'medium' %}text-yellow-600{% else %}text-green-600{% endif %} text-sm font-medium">
+                                            {{ ticket.priority|upper }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between text-xs text-gray-500">
+                                <div class="flex items-center space-x-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <span>Created {{ ticket.createdAt|date('M d, Y') }}</span>
+                                </div>
+                                {% if ticket.updatedAt != ticket.createdAt %}
+                                    <div class="flex items-center space-x-1">
+                                        <span>Updated {{ ticket.updatedAt|date('M d, Y') }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Results Summary -->
+            <div class="mt-8 text-center text-sm text-gray-600">
+                Showing {{ tickets|length }} tickets
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+let currentViewMode = 'grid';
+
+function toggleActions(button) {
+    const menu = button.nextElementSibling;
+    menu.classList.toggle('hidden');
+}
+
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.actionsMenu') && !event.target.closest('button[onclick*="toggleActions"]')) {
+        document.querySelectorAll('.actionsMenu').forEach(menu => {
+            menu.classList.add('hidden');
+        });
+    }
+});
+
+function setViewMode(mode) {
+    currentViewMode = mode;
+    const container = document.getElementById('ticketsContainer');
+    const gridBtn = document.getElementById('gridViewBtn');
+    const listBtn = document.getElementById('listViewBtn');
+    
+    if (mode === 'grid') {
+        container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+        gridBtn.className = 'p-2 rounded-l-lg transition-colors bg-black text-white';
+        listBtn.className = 'p-2 rounded-r-lg transition-colors text-gray-500 hover:bg-gray-100';
+    } else {
+        container.className = 'space-y-4';
+        listBtn.className = 'p-2 rounded-r-lg transition-colors bg-black text-white';
+        gridBtn.className = 'p-2 rounded-l-lg transition-colors text-gray-500 hover:bg-gray-100';
+    }
+}
+
+function filterTickets() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const statusFilter = document.getElementById('statusFilter').value;
+    const tickets = document.querySelectorAll('.ticketCard');
+    
+    tickets.forEach(ticket => {
+        const title = ticket.getAttribute('data-title');
+        const description = ticket.getAttribute('data-description');
+        const status = ticket.getAttribute('data-status');
+        
+        const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+        const matchesStatus = statusFilter === 'all' || status === statusFilter;
+        
+        ticket.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+    });
+}
+
+function deleteTicket(ticketId, button) {
+    if (confirm('Are you sure you want to delete this ticket?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/api/tickets/delete';
+        form.innerHTML = `<input type="hidden" name="id" value="${ticketId}">`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}

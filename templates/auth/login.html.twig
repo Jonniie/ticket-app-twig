@@ -1,0 +1,138 @@
+{% extends 'auth-minimal.html.twig' %}
+
+{% block title %}Login - TicketApp{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div class="text-center">
+            <div class="flex justify-center">
+                <div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-xl">T</span>
+                </div>
+            </div>
+            <h2 class="mt-6 text-3xl font-bold text-black">
+                Sign in to your account
+            </h2>
+            <p class="mt-2 text-sm text-gray-600">
+                Or
+                <a href="/auth/signup" class="font-medium text-black hover:text-gray-800 transition-colors">
+                    create a new account
+                </a>
+            </p>
+        </div>
+
+        <form class="mt-8 space-y-6" method="POST" action="/auth/login">
+            {% if toasts|length > 0 %}
+                {% for toast in toasts %}
+                    {% if toast.type == 'error' %}
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4v2m0-12a9 9 0 110 18 9 9 0 010-18z"></path>
+                            </svg>
+                            <span class="text-red-800 text-sm">{{ toast.message }}</span>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            <div class="space-y-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                        Email address
+                    </label>
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autocomplete="email"
+                        required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200"
+                        placeholder="Enter your email"
+                    />
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                        Password
+                    </label>
+                    <div class="relative">
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            autocomplete="current-password"
+                            required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent transition-all duration-200 pr-10"
+                            placeholder="Enter your password"
+                        />
+                        <button
+                            type="button"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center hover:text-gray-700 transition-colors"
+                            onclick="togglePassword('password'); return false;"
+                        >
+                            <!-- Eye Icon (show password) -->
+                            <svg id="password-icon-show" class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <!-- Eye Off Icon (hide password) -->
+                            <svg id="password-icon-hide" class="w-5 h-5 text-gray-400 hidden" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd"></path>
+                                <path d="M15.171 13.576l1.474 1.474a1 1 0 001.414-1.414l-14-14a1 1 0 00-1.414 1.414l1.474 1.474m1.474 1.474l1.515 1.515m1.514 1.514l1.515 1.515m1.514 1.514l1.515 1.515"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input
+                        id="remember-me"
+                        name="remember-me"
+                        type="checkbox"
+                        class="h-4 w-4 text-black focus:ring-black border-gray-300 rounded"
+                    />
+                    <label for="remember-me" class="ml-2 block text-sm text-gray-700">
+                        Remember me
+                    </label>
+                </div>
+
+                <div class="text-sm">
+                    <a href="#" class="font-medium text-black hover:text-gray-800 transition-colors">
+                        Forgot your password?
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <button
+                    type="submit"
+                    class="w-full bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+                >
+                    Sign in
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const hideIcon = document.getElementById(fieldId + '-icon-hide');
+    const showIcon = document.getElementById(fieldId + '-icon-show');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        hideIcon.classList.remove('hidden');
+        showIcon.classList.add('hidden');
+    } else {
+        field.type = 'password';
+        hideIcon.classList.add('hidden');
+        showIcon.classList.remove('hidden');
+    }
+}
+</script>
+{% endblock %}

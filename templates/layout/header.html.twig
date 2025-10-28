@@ -1,0 +1,42 @@
+<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <!-- Logo -->
+            <a href="/" class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-lg">T</span>
+                </div>
+                <span class="text-xl font-bold text-black">TicketApp</span>
+            </a>
+
+            <!-- Navigation -->
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="/" class="text-gray-600 hover:text-black transition-colors">Home</a>
+                
+                {% if is_authenticated %}
+                    <a href="/dashboard" class="text-gray-600 hover:text-black transition-colors">Dashboard</a>
+                    <a href="/tickets" class="text-gray-600 hover:text-black transition-colors">Tickets</a>
+                {% endif %}
+            </nav>
+
+            <!-- Auth Actions -->
+            <div class="flex items-center space-x-4">
+                {% if is_authenticated %}
+                    <div class="flex items-center space-x-3">
+                        <span class="text-sm text-gray-600">
+                            Welcome, {{ user.name }}
+                        </span>
+                        <a href="/auth/logout" class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            Logout
+                        </a>
+                    </div>
+                {% else %}
+                    <a href="/auth/login" class="text-gray-600 hover:text-black transition-colors">Login</a>
+                    <a href="/auth/signup" class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 transition-colors">
+                        Sign Up
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</header>

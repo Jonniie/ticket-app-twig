@@ -1,0 +1,154 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - TicketApp{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-black mb-2">
+                Welcome back, {{ user.name }}!
+            </h1>
+            <p class="text-gray-600">
+                Here's an overview of your ticket management system.
+            </p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Tickets -->
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Total Tickets</p>
+                        <p class="text-3xl font-bold text-black mt-2">{{ stats.total }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Open Tickets -->
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Open Tickets</p>
+                        <p class="text-3xl font-bold text-green-600 mt-2">{{ stats.open }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4v2m0-12a9 9 0 110 18 9 9 0 010-18z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- In Progress -->
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">In Progress</p>
+                        <p class="text-3xl font-bold text-yellow-600 mt-2">{{ stats.inProgress }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Closed Tickets -->
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Closed Tickets</p>
+                        <p class="text-3xl font-bold text-gray-600 mt-2">{{ stats.closed }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Recent Activity -->
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold text-black mb-4">Recent Activity</h3>
+                <div class="space-y-4">
+                    {% if recentTickets|length > 0 %}
+                        {% for ticket in recentTickets %}
+                            <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                                {% if ticket.status == 'open' %}
+                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                {% elseif ticket.status == 'in_progress' %}
+                                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                {% else %}
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                {% endif %}
+                                <div class="flex-1">
+                                    <p class="font-medium text-sm">{{ ticket.title }}</p>
+                                    <p class="text-xs text-gray-500">
+                                        {% if ticket.updatedAt != ticket.createdAt %}
+                                            Updated
+                                        {% else %}
+                                            Created
+                                        {% endif %}
+                                        <time datetime="{{ ticket.updatedAt }}">{{ ticket.updatedAt|date('M d, Y') }}</time>
+                                    </p>
+                                </div>
+                                <span class="{% if ticket.status == 'open' %}status-badge status-open{% elseif ticket.status == 'in_progress' %}status-badge status-in-progress{% else %}status-badge status-closed{% endif %}">
+                                    {{ ticket.status|upper|replace('_', ' ') }}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-8">
+                            <p class="text-gray-500 text-sm">No recent activity</p>
+                            <p class="text-gray-400 text-xs mt-1">Create your first ticket to get started</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold text-black mb-4">Quick Actions</h3>
+                <div class="space-y-4">
+                    <a href="/tickets" class="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-medium text-black">Manage Tickets</p>
+                            <p class="text-sm text-gray-600">View and manage all tickets</p>
+                        </div>
+                    </a>
+                    
+                    <a href="/tickets/new" class="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-medium text-black">Create New Ticket</p>
+                            <p class="text-sm text-gray-600">Add a new ticket to the system</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

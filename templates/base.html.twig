@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TicketApp{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <!-- Logo -->
+                    <a href="/" class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">T</span>
+                        </div>
+                        <span class="text-xl font-bold text-black">TicketApp</span>
+                    </a>
+
+                    <!-- Navigation -->
+                    <nav class="hidden md:flex items-center space-x-8">
+                        <a href="/" class="text-gray-600 hover:text-black transition-colors">Home</a>
+                        {% if isAuthenticated %}
+                            <a href="/dashboard" class="text-gray-600 hover:text-black transition-colors">Dashboard</a>
+                            <a href="/tickets" class="text-gray-600 hover:text-black transition-colors">Tickets</a>
+                        {% endif %}
+                    </nav>
+
+                    <!-- Auth Actions -->
+                    <div class="flex items-center space-x-4">
+                        {% if isAuthenticated %}
+                            <div class="flex items-center space-x-3">
+                                <span class="text-sm text-gray-600">Welcome, {{ user.name }}</span>
+                                <a href="/auth/logout" class="bg-gray-200 hover:bg-gray-300 text-sm px-4 py-2 rounded-md transition-colors">
+                                    Logout
+                                </a>
+                            </div>
+                        {% else %}
+                            <a href="/auth/login" class="text-gray-600 hover:text-black transition-colors">Login</a>
+                            <a href="/auth/signup" class="bg-black text-white text-sm px-4 py-2 rounded-md hover:bg-gray-800 transition-colors">
+                                Sign Up
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t border-gray-200 mt-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-4">
+                            <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">T</span>
+                            </div>
+                            <span class="text-lg font-bold">TicketApp</span>
+                        </div>
+                        <p class="text-gray-600 text-sm">Manage your tickets efficiently and effectively.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-4">Product</h3>
+                        <ul class="space-y-2 text-sm">
+                            <li><a href="/" class="text-gray-600 hover:text-black">Home</a></li>
+                            <li><a href="/dashboard" class="text-gray-600 hover:text-black">Dashboard</a></li>
+                            <li><a href="/tickets" class="text-gray-600 hover:text-black">Tickets</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-4">Company</h3>
+                        <ul class="space-y-2 text-sm">
+                            <li><a href="#" class="text-gray-600 hover:text-black">About</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-black">Contact</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-black">Privacy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-gray-200 pt-8">
+                    <p class="text-center text-gray-600 text-sm">&copy; 2025 TicketApp. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Toast Notifications -->
+        <div class="fixed top-4 right-4 z-[9999] space-y-2">
+            {% for toast in toasts %}
+                <div class="max-w-sm w-full min-w-[200px] bg-white shadow-lg rounded-lg ring-1 ring-gray-200 overflow-hidden animate-slide-in">
+                    <div class="p-4">
+                        <div class="flex items-start">
+                            <div class="shrink-0">
+                                {% if toast.type == 'success' %}
+                                    <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></path></svg>
+                                {% elseif toast.type == 'error' %}
+                                    <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/></path></svg>
+                                {% elseif toast.type == 'warning' %}
+                                    <svg class="h-5 w-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18.101 12.93a1 1 0 00-1.414-1.414L10 17.586l-6.687-6.687a1 1 0 00-1.414 1.414l8 8a1 1 0 001.414 0l8-8z"/></path></svg>
+                                {% else %}
+                                    <svg class="h-5 w-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2z"/></path></svg>
+                                {% endif %}
+                            </div>
+                            <div class="ml-3 w-0 flex-1">
+                                <p class="text-sm font-medium text-gray-900">{{ toast.message }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="{% if toast.type == 'success' %}bg-green-500{% elseif toast.type == 'error' %}bg-red-500{% elseif toast.type == 'warning' %}bg-yellow-500{% else %}bg-blue-500{% endif %} h-1"></div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <style>
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .animate-slide-in {
+            animation: slideIn 0.3s ease;
+        }
+    </style>
+</body>
+</html>
